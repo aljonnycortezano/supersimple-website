@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Find the Words in Picture</title>
+  <style>
+    .container {
+      position: relative;
+      width: 1300px;
+      height: 600px;
+    }
+
+    .image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .word-container {
+      position: absolute;
+      background-color: rgba(255, 255, 255, 0);
+      padding: 5px;
+      cursor: pointer;
+    }
+
+    #timer {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Find the Words in Picture</h1>
+  <div id="timer">Time: 3:00</div>
+  <div id="hint"></div>
+  <div class="container">
+    <img src="Desktop/HD-wallpaper-the-tea-house-fantasy-city-hidden-arts.jpg" alt="Image" class="image">
+    <div class="word-container">bank reconciliation</div>
+    <div class="word-container">NSF check</div>
+    <div class="word-container">credit memo</div>
+    <div class="word-container">bank charges</div>
+    <div class="word-container">bank statement</div>
+    <div class="word-container">debit memo</div>
+    <div class="word-container">DAIF</div>
+    <div class="word-container">check</div>
+    <div class="word-container">Outstanding check</div>
+    <div class="word-container">Deposit in Transit</div>
+  </div>
+  <button id="play-button">Play</button>
+
+  <script>
+    // Word list and hints
+    const words = [
+      { word: "bank reconciliation", hint: "Is a procedure to reconcile the unadjusted balance and book balances to the correct cash balances." },
+      { word: "NSF check", hint: "Dishonored by the bank because the balance of the issuer's checking account is not enough to cover the amount of the check." },
+      { word: "credit memo", hint: "Refers to additions to the account that were not instructed by the depositor, like interest income." },
+      { word: "bank charges", hint: "Deductions from the account that were not instructed by the depositor, like interest expense and bank service charges." },
+      { word: "bank statement", hint: "Detailed transaction history of the bank account over the reporting period." },
+      { word: "debit memo", hint: "Fees deducted from the bank statement for the bank's processing of the checking account activity." },
+      { word: "DAIF", hint: "Acronym for drawn against insufficient fund." },
+      { word: "check", hint: "A document that orders a bank to pay a specific amount of money from a person's account." },
+      { word: "Outstanding check", hint: "Checks issued and delivered to the designated payee but not yet cleared by the bank." },
+      { word: "Deposit in Transit", hint: "Amounts that have already been received and recorded by the company but are not yet recorded by the bank." }
+    ];
+
+    let currentWordIndex = 0;
+    let timer;
+
+    // Function to display the hint
+    function displayHint() {
+      const hintElement = document.getElementById("hint");
+      hintElement.textContent = "Hint: " + words[currentWordIndex].hint;
+    }
+
+    // Function to start the timer
+    function startTimer(duration, display) {
+      let timer = duration, minutes, seconds;
+
+      setInterval(function () {
+        minutes = parseInt(timer / 60, 10);
+        seconds = parseInt(timer % 60, 10);
+
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+
+        display.textContent = "Time: " + minutes + ":" + seconds;
+
+        if (--timer < 0) {
+          clearInterval(timer);
+          alert("Time's up! Game Over.");
+          resetGame();
+        }
+      }, 1000);
+    }
+
+    // Function to reset the game
+    function resetGame() {
+      currentWordIndex = 0;
+      const wordContainers = document.getElementsByClassName("word-container");
+      for (let i = 0; i < wordContainers.length; i++) {
+        wordContainers[i].style.backgroundColor = "";
+        randomizePosition(wordContainers[i]);
+      }
+      displayHint();
+    }
+
+    // Function to randomize the position of word containers
+    function randomizePosition(element) {
+      const container = document.getElementsByClassName("container")[0];
+      const containerWidth = container.offsetWidth;
+      const containerHeight = container.offsetHeight;
+      const elementWidth = element.offsetWidth;
+      const elementHeight = element.offsetHeight;
+      const maxX = containerWidth - elementWidth;
+      const maxY = containerHeight - elementHeight;
+      const randomX = Math.floor(Math.random() * maxX);
+      const randomY = Math.floor(Math.random() * maxY);
+      element.style.left = randomX + "px";
+      element.style.top = randomY + "px";
+    }
+
+    // Function to handle word container click
+    function handleWordContainerClick() {
+      if (this.textContent === words[currentWordIndex].word) {
+        this.style.backgroundColor = "green";
+        currentWordIndex++;
+        if (currentWordIndex === words.length) {
+          alert("Congratulations! You found all the words.");
+          resetGame();
+        } else {
+          displayHint();
+        }
+      } else {
+        this.style.backgroundColor = "red";
+      }
+    }
+
+    // Event listener for the play button
+    document.getElementById("play-button").addEventListener("click", function () {
+      resetGame();
+      startTimer(180, document.getElementById("timer"));
+    });
+
+    // Event listeners for the word containers
+    const wordContainers = document.getElementsByClassName("word-container");
+    for (let i = 0; i < wordContainers.length; i++) {
+      wordContainers[i].addEventListener("click", handleWordContainerClick);
+    }
+
+    // Initial random positioning of word containers
+    for (let i = 0; i < wordContainers.length; i++) {
+      randomizePosition(wordContainers[i]);
+    }
+  </script>
+</body>
+</html>
